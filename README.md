@@ -1,29 +1,33 @@
 # Soulprint Backend
 
-A journaling application backend with AI-powered reflection capabilities built with Go, MongoDB, and OpenAI.
+A journaling application backend with AI-powered reflection capabilities built with Go, MongoDB, and local/cloud AI models.
 
 ## Features
 
 - **Journal Entries**: Create, read, update, and delete personal journal entries
 - **AI Reflections**: Generate AI-powered insights and reflections on journal entries
+- **Local AI Support**: Use local models (Llama3, etc.) for privacy and control
+- **Cloud AI Support**: Optional OpenAI integration for advanced capabilities
 - **Insights Dashboard**: Get personalized insights and sentiment analysis
 - **RESTful API**: Clean, well-documented API endpoints
 - **MongoDB Integration**: Robust data storage with MongoDB
-- **OpenAI Integration**: Powered by OpenAI GPT models for intelligent reflections
+- **Privacy First**: Keep your data local with local model support
 
 ## Tech Stack
 
 - **Language**: Go 1.21+
 - **Database**: MongoDB
-- **AI**: OpenAI GPT API
+- **AI Models**: Local (Ollama/Llama3) + OpenAI GPT API
 - **Router**: Gorilla Mux
 - **Environment**: godotenv
+- **Local AI**: Ollama, LM Studio, or custom model servers
 
 ## Prerequisites
 
 - Go 1.21 or higher
 - MongoDB (local or Atlas)
-- OpenAI API key
+- **For Local AI**: Ollama with Llama3 model OR LM Studio OR custom model server
+- **For Cloud AI**: OpenAI API key (optional)
 
 ## Installation & Setup
 
@@ -44,16 +48,40 @@ A journaling application backend with AI-powered reflection capabilities built w
    PORT=8080
    MONGODB_URI=mongodb://localhost:27017
    MONGODB_DATABASE=soulprint
+   
+   # For Local AI (Recommended)
+   USE_LOCAL_MODEL=true
+   LOCAL_MODEL_URL=http://localhost:11434
+   LOCAL_MODEL_NAME=llama3:8b
+   
+   # For OpenAI (Optional)
    OPENAI_API_KEY=your_openai_api_key_here
    OPENAI_MODEL=gpt-3.5-turbo
    ```
 
-4. **Start MongoDB**
+4. **Set up AI Model**
+   
+   **Option A: Local AI (Recommended)**
+   ```bash
+   # Install Ollama
+   curl -fsSL https://ollama.ai/install.sh | sh
+   
+   # Start Ollama and pull Llama3
+   ollama serve
+   ollama pull llama3
+   ```
+   
+   **Option B: OpenAI**
+   - Get API key from https://platform.openai.com/account/api-keys
+   - Set `USE_LOCAL_MODEL=false` in `.env`
+   - Add your `OPENAI_API_KEY` to `.env`
+
+5. **Start MongoDB**
    Make sure MongoDB is running locally or configure your MongoDB Atlas connection string.
 
-5. **Run the application**
+6. **Run the application**
    ```bash
-   go run cmd/main.go
+   make run
    ```
 
 The API will be available at `http://localhost:8080`
@@ -95,11 +123,20 @@ curl -X POST http://localhost:8080/api/v1/entries \
 
 ### Generate AI Reflection
 ```bash
+# Generate insight using local Llama3
 curl -X POST http://localhost:8080/api/v1/reflect \
   -H "Content-Type: application/json" \
   -d '{
     "entry_id": "64f7b123456789abcdef0123",
     "type": "insight"
+  }'
+
+# Generate summary
+curl -X POST http://localhost:8080/api/v1/reflect \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entry_id": "64f7b123456789abcdef0123",
+    "type": "summary"
   }'
 ```
 
@@ -157,7 +194,10 @@ The application uses environment variables for configuration:
 | `PORT` | Server port | `8080` |
 | `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017` |
 | `MONGODB_DATABASE` | Database name | `soulprint` |
-| `OPENAI_API_KEY` | OpenAI API key | `""` |
+| `USE_LOCAL_MODEL` | Use local AI model | `false` |
+| `LOCAL_MODEL_URL` | Local model server URL | `http://localhost:11434` |
+| `LOCAL_MODEL_NAME` | Local model name | `llama3` |
+| `OPENAI_API_KEY` | OpenAI API key (if not using local) | `""` |
 | `OPENAI_MODEL` | OpenAI model to use | `gpt-3.5-turbo` |
 
 ## AI Reflection Types
@@ -165,6 +205,45 @@ The application uses environment variables for configuration:
 - **insight**: Thoughtful reflections and perspectives (default)
 - **summary**: Concise summaries of journal entries
 - **analysis**: Deep analysis with growth insights
+
+## Local vs Cloud AI
+
+### 🏠 Local AI (Recommended)
+- ✅ **Privacy**: Your data never leaves your computer
+- ✅ **Cost**: No API fees
+- ✅ **Speed**: Fast local processing
+- ✅ **Control**: Full ownership of AI responses
+- ✅ **Offline**: Works without internet
+- 📱 **Models**: Llama3, Code Llama, Mistral, etc.
+
+### ☁️ Cloud AI (OpenAI)
+- ✅ **Advanced**: Latest GPT models
+- ✅ **Quality**: High-quality responses
+- ❌ **Privacy**: Data sent to OpenAI
+- ❌ **Cost**: API usage fees
+- ❌ **Internet**: Requires internet connection
+
+## Local Model Setup
+
+### Ollama (Recommended)
+```bash
+# Install
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Start service
+ollama serve
+
+# Pull models
+ollama pull llama3        # 8B model
+ollama pull llama3:70b    # 70B model (requires more RAM)
+ollama pull codellama     # Code-focused model
+```
+
+### Alternative: LM Studio
+1. Download from https://lmstudio.ai/
+2. Load a model (Llama3, Mistral, etc.)
+3. Start the server
+4. Update `LOCAL_MODEL_URL=http://localhost:1234` in `.env`
 
 ## Development
 

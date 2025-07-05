@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 
@@ -43,10 +42,6 @@ func NewOpenAIClient() *OpenAIClient {
 		localModel: config.AppConfig.LocalModelName,
 	}
 
-	// Debug logging
-	log.Printf("DEBUG: UseLocalModel=%t, LocalURL=%s, LocalModel=%s",
-		config.AppConfig.UseLocalModel, config.AppConfig.LocalModelURL, config.AppConfig.LocalModelName)
-
 	if !config.AppConfig.UseLocalModel {
 		client.client = openai.NewClient(config.AppConfig.OpenAIAPIKey)
 	}
@@ -55,14 +50,10 @@ func NewOpenAIClient() *OpenAIClient {
 }
 
 func (oai *OpenAIClient) GenerateReflection(journalContent, reflectionType string) (string, error) {
-	log.Printf("DEBUG: GenerateReflection called with useLocal=%t", oai.useLocal)
-
 	if oai.useLocal {
-		log.Printf("DEBUG: Using local model for reflection")
 		return oai.generateLocalReflection(journalContent, reflectionType)
 	}
 
-	log.Printf("DEBUG: Using OpenAI model for reflection")
 	if config.AppConfig.OpenAIAPIKey == "" {
 		return "AI reflection unavailable - API key not configured", nil
 	}

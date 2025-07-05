@@ -38,7 +38,7 @@ func LoadConfig() {
 	}
 
 	if AppConfig.UseLocalModel {
-		log.Printf("Using local model at: %s", AppConfig.LocalModelURL)
+		// Local model configuration loaded
 	} else if AppConfig.OpenAIAPIKey == "" {
 		log.Println("Warning: OPENAI_API_KEY not set and USE_LOCAL_MODEL is false")
 	}
