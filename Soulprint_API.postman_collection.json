@@ -1,0 +1,511 @@
+{
+	"info": {
+		"_postman_id": "soulprint-api-collection",
+		"name": "Soulprint API",
+		"description": "Complete API collection for Soulprint Backend - A journaling application with AI-powered reflections",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health & Info",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Check if the API is healthy and running"
+					},
+					"response": []
+				},
+				{
+					"name": "API Welcome",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Get welcome message and API version"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Create User (MVP)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user"
+							]
+						},
+						"description": "Create a new user (MVP implementation with hardcoded logic)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Journal Entries",
+			"item": [
+				{
+					"name": "Create Journal Entry",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.success && responseJson.data && responseJson.data.id) {",
+									"        pm.collectionVariables.set('entry_id', responseJson.data.id);",
+									"        console.log('Entry ID saved:', responseJson.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"My First Day with Soulprint\",\n    \"content\": \"Today I started using Soulprint for journaling. I feel excited about having a digital space to reflect on my thoughts and experiences. The AI reflection feature sounds really interesting - I wonder what insights it might provide about my daily experiences.\",\n    \"tags\": [\"first-day\", \"excitement\", \"reflection\"],\n    \"mood\": \"optimistic\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/entries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries"
+							]
+						},
+						"description": "Create a new journal entry. The response will automatically save the entry_id for other requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Journal Entries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/entries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries"
+							]
+						},
+						"description": "Get all journal entries for the current user (sorted by creation date, newest first)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Journal Entry",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/entries/{{entry_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries",
+								"{{entry_id}}"
+							]
+						},
+						"description": "Get a specific journal entry by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Journal Entry",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"My Updated Journal Entry\",\n    \"content\": \"This is my updated journal entry content. I've added more thoughts and reflections about my day.\",\n    \"tags\": [\"updated\", \"reflection\", \"growth\"],\n    \"mood\": \"content\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/entries/{{entry_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries",
+								"{{entry_id}}"
+							]
+						},
+						"description": "Update an existing journal entry"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Journal Entry",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/entries/{{entry_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries",
+								"{{entry_id}}"
+							]
+						},
+						"description": "Delete a journal entry by ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AI Reflections",
+			"item": [
+				{
+					"name": "Generate AI Reflection - Insight",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"entry_id\": \"{{entry_id}}\",\n    \"type\": \"insight\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reflect",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reflect"
+							]
+						},
+						"description": "Generate an AI insight reflection for a journal entry. Requires valid OpenAI API key."
+					},
+					"response": []
+				},
+				{
+					"name": "Generate AI Reflection - Summary",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"entry_id\": \"{{entry_id}}\",\n    \"type\": \"summary\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reflect",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reflect"
+							]
+						},
+						"description": "Generate an AI summary reflection for a journal entry. Requires valid OpenAI API key."
+					},
+					"response": []
+				},
+				{
+					"name": "Generate AI Reflection - Analysis",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"entry_id\": \"{{entry_id}}\",\n    \"type\": \"analysis\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reflect",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reflect"
+							]
+						},
+						"description": "Generate an AI analysis reflection for a journal entry. Requires valid OpenAI API key."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Reflections",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reflections",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reflections"
+							]
+						},
+						"description": "Get all AI-generated reflections for the current user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reflections for Entry",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/entries/{{entry_id}}/reflections",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries",
+								"{{entry_id}}",
+								"reflections"
+							]
+						},
+						"description": "Get all reflections for a specific journal entry"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Analytics & Insights",
+			"item": [
+				{
+					"name": "Get Personal Insights",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/insights",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"insights"
+							]
+						},
+						"description": "Get personalized insights and analytics based on journal entries and reflections"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sample Data Creation",
+			"item": [
+				{
+					"name": "Create Sample Entry - Productive Day",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Productive Monday\",\n    \"content\": \"Started the week strong! Completed all my morning tasks, had a great workout, and made significant progress on my project. Feeling energized and motivated. I love when everything clicks into place like this.\",\n    \"tags\": [\"productivity\", \"energy\", \"motivation\", \"exercise\"],\n    \"mood\": \"energized\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/entries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries"
+							]
+						},
+						"description": "Create a sample productive day entry"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sample Entry - Reflective Evening",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Evening Reflections\",\n    \"content\": \"Spent some quiet time this evening thinking about my goals and where I want to be next year. Sometimes it's overwhelming to think about the future, but also exciting. I'm grateful for the progress I've made so far, even if it feels slow sometimes.\",\n    \"tags\": [\"reflection\", \"goals\", \"gratitude\", \"future\"],\n    \"mood\": \"contemplative\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/entries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries"
+							]
+						},
+						"description": "Create a sample reflective evening entry"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sample Entry - Challenging Day",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"A Challenging Day\",\n    \"content\": \"Today was tough. Faced several setbacks at work and felt frustrated with my progress. It's hard not to take these things personally. But I know tomorrow is a new day, and challenges are part of growth. Need to be kinder to myself.\",\n    \"tags\": [\"challenges\", \"setbacks\", \"growth\", \"self-compassion\"],\n    \"mood\": \"frustrated\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/entries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"entries"
+							]
+						},
+						"description": "Create a sample challenging day entry"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "entry_id",
+			"value": "6861646fbbd7a047696a11d9",
+			"type": "string"
+		}
+	]
+} 
